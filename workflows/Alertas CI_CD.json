@@ -1,0 +1,434 @@
+{
+  "name": "Alertas CI/CD",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6fa3ad5b-75da-4c30-b232-25ec52b0da1f",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        16,
+        32
+      ],
+      "id": "99f396de-a828-4f75-80f1-3e7b1f1eb6dd",
+      "name": "Webhook",
+      "webhookId": "6fa3ad5b-75da-4c30-b232-25ec52b0da1f"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.workflow_run.conclusion }}",
+                    "rightValue": "failure",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "bd3cae1a-0f04-43b8-9c1a-a373302d0c80"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "60ed8fe3-32b5-46fc-a391-b4a3af00b7dd",
+                    "leftValue": "={{ $json.body.workflow_run.conclusion }}",
+                    "rightValue": "success",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        1136,
+        -96
+      ],
+      "id": "ee58eded-88ea-44a5-8f49-7552cb70dc59",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c885caf9-37f8-4e1d-acb5-d735b0afa33f",
+              "name": "mensagem",
+              "value": "=A pipeline do {{ $json.body.repository.full_name }} falhou",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1456,
+        -144
+      ],
+      "id": "b0be4c09-64e5-45a7-9023-42c172c2259c",
+      "name": "estado falhou"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d87a24d5-179c-4aa4-8d3a-0ebe26fcb8e5",
+              "name": "mensagem",
+              "value": "= A pipeline do {{ $json.body.repository.full_name }} passou",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1456,
+        16
+      ],
+      "id": "1366cc3b-995d-4667-87cd-322e0bd15230",
+      "name": "estado passou"
+    },
+    {
+      "parameters": {
+        "chatId": "8794029178",
+        "text": "={{ $json.mensagem }} ",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1744,
+        16
+      ],
+      "id": "d266c637-8183-4ac2-ac58-400672104eba",
+      "name": "Send a text message",
+      "webhookId": "1c49373d-30f6-4f0e-b7b4-ea958c425f10",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "telegramApi": {
+          "id": "6tWcJ4vAMEXnUvsX",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "5fadb9f8-16e8-4a1b-b468-096b21113341",
+              "leftValue": "={{ $json.body.action }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.4,
+      "position": [
+        960,
+        -80
+      ],
+      "id": "17ef9bcd-96dd-42e8-8d95-80a4e0ece092",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d87a24d5-179c-4aa4-8d3a-0ebe26fcb8e5",
+              "name": "mensagem",
+              "value": "= A pipeline do {{ $json.body.repository.full_name }} é desconhecido",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1456,
+        192
+      ],
+      "id": "3c4b8f02-8859-4f7d-b8ed-394f84dbc63f",
+      "name": "estado desconhecido"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "rawBody",
+        "options": {
+          "keepSource": "json"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        32
+      ],
+      "id": "6296929a-c6b1-43ff-a628-c70ba9c3d93f",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "action": "hmac",
+        "value": "={{ $json.rawBody }}",
+        "dataPropertyName": "assinaturaCalculada"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        464,
+        32
+      ],
+      "id": "335def19-7f38-4414-bce1-53f3fa9a9f91",
+      "name": "Crypto",
+      "credentials": {
+        "crypto": {
+          "id": "iHcHf6VVRAWtmByf",
+          "name": "Crypto account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "a566950f-5044-4a96-9d52-a6d19baa181e",
+              "leftValue": "={{  'sha256=' + $json.assinaturaCalculada }}",
+              "rightValue": "={{ $json.headers['x-hub-signature-256'] }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        688,
+        32
+      ],
+      "id": "298a1c7b-b0d5-4515-b192-2bd2db1021a3",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Assinatura inválida: pedido rejeitado"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        960,
+        128
+      ],
+      "id": "febb1c27-8b21-411f-9648-0b42409f8c5c",
+      "name": "Stop and Error"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "estado falhou",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "estado passou",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "estado desconhecido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "estado falhou": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "estado passou": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "estado desconhecido": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Crypto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crypto": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3af2b097-65a0-4ac1-81a5-1dd9b4c58498",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f33faa69f754bc5a836958993d3935a60346ea6185f75f43b79bbd3476aa1389"
+  },
+  "nodeGroups": [],
+  "id": "JxwwsKrxkoDegNnS",
+  "tags": []
+}

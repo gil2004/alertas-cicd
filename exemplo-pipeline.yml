@@ -1,0 +1,24 @@
+name: Pipeline de teste
+
+on:
+  workflow_dispatch:
+    inputs:
+      falhar:
+        description: "Fazer a pipeline falhar?"
+        type: boolean
+        default: true
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simular testes
+        env:
+          FALHAR: ${{ inputs.falhar }}
+        run: |
+          echo "A correr os testes..."
+          if [ "$FALHAR" = "true" ]; then
+            echo "Um teste falhou (de propósito)"
+            exit 1
+          fi
+          echo "Todos os testes passaram"
